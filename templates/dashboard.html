@@ -1,0 +1,19 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Bienvenue, {{ current_user.id }}</h1>
+  {% if current_user.role == 'admin' %}
+    <form method="post" action="/scale-up"><button>Scale Up</button></form>
+    <form method="post" action="/scale-down"><button>Scale Down</button></form>
+  {% endif %}
+  <h2>Jobs</h2>
+  <ul>{% for job in jobs %}<li>{{ job.name }} - {{ job.status }}</li>{% endfor %}</ul>
+  <h2>Workers</h2>
+  <ul>{% for w in workers %}<li>{{ w.id }} - {{ w.status }} - {{ w.age }}</li>{% endfor %}</ul>
+</body>
+</html>
