@@ -2,7 +2,7 @@ version: '3.9'
 services:
   dashboard:
     build: .
-    container_name: deadline_dashboard
+    container_name: render_dashboard
     ports:
       - "8080:8080"
     env_file: .env

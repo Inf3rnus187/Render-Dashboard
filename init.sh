@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "Initialisation de l’environnement…"
-cp .env.example .env
+echo "🔧 Initialisation du Render Dashboard..."
 mkdir -p logs
 mkdir -p logs/reports
 docker-compose build
 docker-compose up -d
+echo "✅ Déploiement terminé sur http://localhost:8080"
