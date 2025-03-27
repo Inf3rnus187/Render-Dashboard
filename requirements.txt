@@ -4,3 +4,4 @@ flask-ldap3-login
 requests
 reportlab
 python-dotenv
+openstacksdk

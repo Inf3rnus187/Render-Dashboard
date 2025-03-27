@@ -1,0 +1,14 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Configuration .env</title></head>
+<body>
+  <h1>État de la configuration (.env)</h1>
+  <table border="1">
+    <tr><th>Variable</th><th>Valeur</th></tr>
+    {% for key, value in config_vars.items() %}
+    <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

@@ -6,14 +6,164 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
+<style>
+  body { display: flex; margin: 0; }
+  nav.sidebar {
+    width: 200px;
+    background: #2c3e50;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+  }
+  nav.sidebar a {
+    color: white;
+    display: block;
+    margin: 10px 0;
+    text-decoration: none;
+  }
+  main {
+    flex-grow: 1;
+    padding: 20px;
+  }
+
+<style>
+  .badge {
+    background-color: red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-size: 0.8em;
+    margin-left: 5px;
+  }
+</style>
+
+</style>
+<nav class="sidebar">
+  <h3>Render Dashboard</h3>
+  <a href="/dashboard">🏠 Dashboard <span class="badge">{{ jobs|length }}</span></a>
+  <a href="#">🖥️ Workers 
+    <span class="badge" style="background-color:green;">{{ workers|selectattr('status', 'equalto', 'ACTIVE')|list|length }}</span>
+    <span class="badge" style="background-color:darkred;">{{ workers|rejectattr('status', 'equalto', 'ACTIVE')|list|length }}</span>
+  </a>
+  {% if current_user.role == 'admin' %}
+  <a href="/admin/config">⚙️ Config</a>
+  <a href="/admin/audit">📝 Audit</a>
+  {% endif %}
+  <a href="/logout">🚪 Déconnexion</a>
+</nav>
+<main>
+
+  <div style="margin: 20px 0;">
+    <label for="searchInput">🔍 Rechercher un job :</label>
+    <input type="text" id="searchInput" onkeyup="filterJobs()" placeholder="Nom du job...">
+
+    <label for="sortJobs">🔃 Trier :</label>
+    <select id="sortJobs" onchange="sortJobs()">
+      <option value="name">Par nom (A-Z)</option>
+      <option value="reverse-name">Par nom (Z-A)</option>
+    </select>
+  </div>
+
+  <script>
+    function filterJobs() {
+      const status = document.getElementById("statusFilter").value;
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const jobs = document.querySelectorAll("ul#jobList li");
+
+      jobs.forEach(job => {
+        const name = job.dataset.name.toLowerCase();
+        const matchStatus = (status === "all" || job.dataset.status === status);
+        const matchSearch = name.includes(search);
+        job.style.display = (matchStatus && matchSearch) ? "list-item" : "none";
+      });
+    }
+
+    function sortJobs() {
+      const list = document.getElementById("jobList");
+      const jobs = Array.from(list.children);
+      const sort = document.getElementById("sortJobs").value;
+
+      jobs.sort((a, b) => {
+        const nameA = a.dataset.name.toLowerCase();
+        const nameB = b.dataset.name.toLowerCase();
+        if (sort === "name") return nameA.localeCompare(nameB);
+        if (sort === "reverse-name") return nameB.localeCompare(nameA);
+      });
+
+      jobs.forEach(job => list.appendChild(job));
+    }
+  </script>
+
+
+  <label for="statusFilter">Filtrer les jobs par statut :</label>
+  <select id="statusFilter" onchange="filterJobs()">
+    <option value="all">Tous</option>
+    {% for status, count in job_summary.items() %}
+      <option value="{{ status }}">{{ status }} ({{ count }})</option>
+    {% endfor %}
+  </select>
+
+  <script>
+    function filterJobs() {
+      const status = document.getElementById("statusFilter").value;
+      const jobs = document.querySelectorAll("ul#jobList li");
+      jobs.forEach(job => {
+        if (status === "all" || job.dataset.status === status) {
+          job.style.display = "list-item";
+        } else {
+          job.style.display = "none";
+        }
+      });
+    }
+  </script>
+
+
   <h1>Bienvenue, {{ current_user.id }}</h1>
+  <nav><a href="/admin/config">🔧 Configuration</a> | <a href="/logout">Déconnexion</a></nav>
   {% if current_user.role == 'admin' %}
     <form method="post" action="/scale-up"><button>Scale Up</button></form>
     <form method="post" action="/scale-down"><button>Scale Down</button></form>
   {% endif %}
   <h2>Jobs</h2>
-  <ul>{% for job in jobs %}<li>{{ job.name }} - {{ job.status }}</li>{% endfor %}</ul>
+  
+  <ul id="jobList">
+    {% for job in jobs %}
+      <li data-status="{{ job.status }}" data-name="{{ job.name }}">
+        {{ job.name }} - {{ job.status }}
+        {% if current_user.role == 'admin' %}
+          <form style="display:inline;" method="post" action="/job/{{ job.id }}/suspend">
+            <button>Suspendre</button>
+          </form>
+          <form style="display:inline;" method="post" action="/job/{{ job.id }}/resume">
+            <button>Reprendre</button>
+          </form>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
   <h2>Workers</h2>
-  <ul>{% for w in workers %}<li>{{ w.id }} - {{ w.status }} - {{ w.age }}</li>{% endfor %}</ul>
+  <ul id="jobList">{% for w in workers %}<li data-status="{{ job.status }}" data-name="{{ job.name }}">{{ w.id }} - {{ w.status }} - {{ w.age }}</li>{% endfor %}</ul>
+
+  <h2>Répartition des statuts</h2>
+  <canvas id="jobStatusChart" width="400" height="200"></canvas>
+  <script>
+    const ctx = document.getElementById('jobStatusChart').getContext('2d');
+    const statusData = {
+      labels: Object.keys({{ job_summary|tojson }}),
+      datasets: [{
+        label: 'Répartition des jobs',
+        data: Object.values({{ job_summary|tojson }}),
+        borderWidth: 1
+      }]
+    };
+    new Chart(ctx, {
+      type: 'pie',
+      data: statusData,
+    });
+  </script>
+
+</main>
 </body>
 </html>
