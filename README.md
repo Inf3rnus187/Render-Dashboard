@@ -16,6 +16,16 @@ Ou avec `make` :
 ```bash
 make init
 ```
+## 🐳 Image Docker officielle
+
+Ce projet est disponible sous forme d’image Docker publique sur GitHub Container Registry :
+
+```bash
+docker pull ghcr.io/inf3rnus187/render-dashboard:latest
+```
+
+Utilisé automatiquement dans le `docker-compose.yml`.
+
 
 ## 🔐 Accès
 - URL : http://localhost:8080
