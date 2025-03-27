@@ -5,7 +5,7 @@ Dashboard Web pour le suivi et l'autoscaling de rendu cloud avec Deadline + Open
 ## 📦 Installation rapide
 
 ```bash
-git clone https://monrepo/render-dashboard.git
+git clone https://github.com/inf3rnus187/render-dashboard.git
 cd render-dashboard
 chmod +x init.sh
 ./init.sh
@@ -21,7 +21,7 @@ make init
 Ce projet est disponible sous forme d’image Docker publique sur GitHub Container Registry :
 
 ```bash
-docker pull ghcr.io/inf3rnus187/render-dashboard:latest
+docker pull ghcr.io/inf3rnus187/render-dashboard:main
 ```
 
 Utilisé automatiquement dans le `docker-compose.yml`.

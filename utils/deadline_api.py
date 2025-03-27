@@ -1,4 +1,3 @@
-
 import os
 import requests
 
@@ -55,3 +54,12 @@ def resume_job(job_id):
     except requests.RequestException as e:
         print(f"Erreur lors de la reprise du job {job_id} : {e}")
         return False
+
+
+def get_job_summary():
+    # Exemple fictif : résumé de l'état des jobs
+    return {
+        "waiting": 2,
+        "rendering": 4,
+        "completed": 8
+    }
