@@ -3,7 +3,7 @@ from utils.env_validator import validate_env
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from config import Config, User
-from utils.deadline_api import get_jobs
+from utils.deadline_api import get_jobs, get_job_summary
 from utils.openstack_api import get_workers, scale_up, scale_down
 from utils.logger import log_event, get_audit_logs
 import json
