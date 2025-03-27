@@ -34,3 +34,42 @@ make init
 ```bash
 */10 * * * * docker exec deadline_dashboard python utils/autoscaler.py
 ```
+
+## 📁 Structure des logs
+
+- `logs/actions.log` : historique des scalings, actions utilisateur
+- `logs/errors.log` : erreurs système ou réseau
+- `logs/jobs.csv` : export des jobs pour reporting
+- `logs/reports/` : PDF de rapports générés
+
+## 🔒 Authentification LDAP (optionnelle)
+
+Configurer dans `.env` :
+
+```env
+LDAP_ENABLED=true
+LDAP_HOST=ldap://your.ldap.server
+LDAP_BASE_DN=dc=domain,dc=com
+LDAP_BIND_USER=cn=readonly,dc=domain,dc=com
+LDAP_BIND_PASS=motdepasse
+```
+
+Le dashboard passera automatiquement en mode LDAP via Flask-LDAP3-Login.
+
+## 📦 Déploiement en production
+
+Pour production, utiliser :
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+Fichier `docker-compose.prod.yml` à créer avec :
+
+```yaml
+services:
+  dashboard:
+    environment:
+      - FLASK_ENV=production
+    restart: always
+```
